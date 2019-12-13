@@ -1,0 +1,73 @@
+﻿@model List<Cat>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<form asp-controller="Animal" asp-action="Index">
+    <p>
+        <input type="text" name="SearchString" value="@ViewBag.SearchString">
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+<div class="container">
+    <div class="row">
+        @await Html.PartialAsync("_ShowCats")
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" role="dialog" id="deletemodal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete this cat. Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="cat-id" />
+                <button type="button" class="btn btn-outline-danger" id="deletebutton" data-name>Delete Cat</button>
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#deletemodal').on('show.bs.modal', function (event) {
+    console.log('Hello!')
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var catId = button.data('id')
+  var catName = button.data('name') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+        var modal = $(this)
+        console.log(catName)
+        console.log(catId)
+        modal.find('.modal-title').text('Deleting ' + catName)
+        modal.find('#cat-id').val(catId)
+    })
+    $('#deletebutton').click(function (e) {
+        var catId = $("#cat-id").val();
+        console.log(catId)
+         $.ajax({
+                type: "POST",
+                url: "/Animal/Delete/"+catId,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (msg) {
+                    window.location.reload();
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+    })
+</script>
